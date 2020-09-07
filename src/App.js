@@ -18,7 +18,9 @@ function getRandomInt(max) {
 const ADD_TODO = 'ADD_TODO'
 const SEL_NODE = 'SEL_NODE'
 const ADD_TAR = 'ADD_TAR'
-const CRE_EDGE = 'CRE_EDGE'
+const UPDATE_DESCRIPTION = 'UPDATE_DESCRIPTION'
+const ADD_NET = 'ADD_NET'
+const GET_DESCRIPTION = 'GET_DESCRIPTION'
 
 const initialState = {
   node: '',
@@ -46,10 +48,24 @@ function addTarget(target) {
   }
 }
 
-function createEdge(destination) {
+function addNetwork(network) {
   return {
-    type: CRE_EDGE,
-    destination
+    type: ADD_NET,
+    network
+  }
+}
+
+function updateDesc(description) {
+  return {
+    type: UPDATE_DESCRIPTION,
+    description
+  }
+}
+
+function getDesc(getdescription) {
+  return {
+    type: GET_DESCRIPTION,
+    getdescription
   }
 }
 
@@ -59,6 +75,9 @@ const mapStateToProps = state => ({
   node: state.node,
   target: state.target,
   destination: state.destination,
+  network: state.network,
+  description: state.description,
+  getdescription: state.getdescription
 })
 
 
@@ -86,9 +105,19 @@ function cytoReduce(state = initialState, action) {
         target: action.target
       })
 
-    case CRE_EDGE:
+    case UPDATE_DESCRIPTION:
       return Object.assign({}, state, {
-        destination: action.destination
+        description: action.description
+      })
+
+    case ADD_NET:
+      return Object.assign({}, state, {
+        network: action.network
+      })
+
+    case GET_DESCRIPTION:
+      return Object.assign({}, state, {
+        getdescription: action.getdescription
       })
 
     default:
@@ -98,6 +127,37 @@ function cytoReduce(state = initialState, action) {
 
 
 const store = createStore(cytoReduce)
+
+class Simpletextarea extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "React"
+    };
+  }
+
+  handleChange(event) {
+    store.dispatch(addNetwork(event.target.value))
+    //this.setState({ value: event.target.value });
+  }
+
+  //handleChange(event) {
+  //  console.log(event.target.value)
+  //}
+
+  render() {
+    return (
+      <div>
+        <textarea type="textarea"
+          name="textValue"
+          //defaultvalue={1000}
+          onChange={this.handleChange}
+        />
+      </div>
+    );
+  }
+}
+Simpletextarea = connect(mapStateToProps)(Simpletextarea)
 
 
 class Button extends React.Component {
@@ -126,29 +186,30 @@ class NameForm extends React.Component {
     super(props);
     this.state = { value: '' };
 
-    this.handleChange = this.handleChange.bind(this);
+    //this.handleChange = this.handleChange.bind(this);
     //this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
-    store.dispatch(addTarget(event.target.value))
-    this.setState({ value: event.target.value });
-  }
-
-
-
+  //handleChange(event) {
+  //  store.dispatch(addTarget(event.target.value))
+  //  this.setState({ value: event.target.value });
+  //}
 
   render() {
     return (
       <form onSubmit={e => {
         e.preventDefault();
-        this.props.AddCyConnection()
+        this.props.Submit()
       }}>
         <label>
-          
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
+
+          <input type="text" value={this.state.value}
+            onChange={e => {
+              this.props.handleChange(e)
+              this.setState({ value: e.target.value })
+            }} />
         </label>
-        <input type="submit" value="Add new node" />
+        <input type="submit" value={this.props.className} />
       </form>
     );
   }
@@ -169,44 +230,57 @@ class MyApp extends React.Component {
 
     this.RemoveCyNode = this.RemoveCyNode.bind(this)
     this.AddCyConnection = this.AddCyConnection.bind(this)
+    this.UpdateCyDesc = this.UpdateCyDesc.bind(this)
   }
 
+  handleChangeTarget(event) {
+    store.dispatch(addTarget(event.target.value));
+  }
+
+  handleUpdateDesc(event) {
+    store.dispatch(updateDesc(event.target.value));
+  }
 
   RemoveCyNode() {
-    //const node=this.props.node
-    //cy.nodes("[foo = 'true']
-    //this.cy.remove(this.cy.$(node));
-    //this.cy.remove(this.cy.nodes("[selected = 'true']"))
-    this.cy.remove("[selected = 'true']")
+    const nodevar = "#" + this.props.node
+    this.cy.remove(this.cy.$(nodevar));
   }
 
+  UpdateCyDesc() {
+    const newlabel = this.props.description
+    const node = this.props.node
+    console.log(newlabel)
+    this.cy.$('#' + node).data('desc', newlabel)
+  }
 
 
   AddCyConnection() {
 
-    const nodee = this.props.node
+    const node = this.props.node
     const target = this.props.target
 
-    if (nodee==''){
+    if (node == '') {
       this.cy.add([
-        { group: 'nodes', data: { id: this.state.CytoSize.toString(), label: target }, position: { x: 230, y: 300 } },
+        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: 'null' }, position: { x: 230, y: 300 } },
       ]);
     }
-    else{
-    this.cy.add([
-      { group: 'nodes', data: { id: this.state.CytoSize.toString(), label: target }, position: { x: 230, y: 300 } },
-      { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: this.state.CytoSize.toString(), target: nodee } }
-    ]);
-  }
+    else {
+      this.cy.add([
+        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target }, position: { x: 230, y: 300 } },
+        { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: "n" + this.state.CytoSize.toString(), target: node, desc: 'null' } }
+      ]);
+    }
     this.setState({ CytoSize: this.state.CytoSize + 1 })
 
   }
 
+
+
   AddCyEdge(destination) {
-    const nodee = this.props.node
+    const node = this.props.node
 
     this.cy.add([
-      { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: nodee, target: destination } }
+      { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: node, target: destination, desc: 'null' } }
     ]);
   }
 
@@ -214,7 +288,9 @@ class MyApp extends React.Component {
   render() {
 
     const currentnode = this.props.node
-
+    const description = this.props.description
+    const network = this.props.network
+    const getdescription = this.props.getdescription
     return (
       <div>
 
@@ -229,12 +305,14 @@ class MyApp extends React.Component {
               }
               else {
                 var node = evt.target;
+                var selector = '#' + store.getState().node
 
-                console.log('clicked ' + node.id())
+                console.log('clicked ID' + node.data('label'))
 
-                console.log('log' + store.getState().node)
+                console.log('log ' + selector)
 
                 store.dispatch(selNode(node.id()))
+                store.dispatch(getDesc(cy.$(selector).data('desc')))
               }
             })
             cy.on('cxttap', 'node', function (evt) {
@@ -254,14 +332,34 @@ class MyApp extends React.Component {
           style={{ width: '600px', height: '600px' }}
 
         />
-      
-        <span>Target node: {currentnode}</span>
-        <NameForm AddCyConnection={this.AddCyConnection} />
-        <Button onClick={this.RemoveCyNode} className="Remove Node"/>
-        <Button onClick={()=>this.cy.png()} className="Export Image"/>
-        <Button onClick={()=>console.log(this.cy.$(this.props.node))} className="Export JSON"/>
 
+        <span>Description: {getdescription}</span>
+        <NameForm
+          Submit={this.AddCyConnection}
+          handleChange={this.handleChangeTarget}
+          className="Add new node"
+        />
 
+        <NameForm
+          Submit={this.UpdateCyDesc}
+          handleChange={this.handleUpdateDesc}
+          className="Update Description"
+        />
+
+        <Button onClick={this.RemoveCyNode} className="Remove Node" />
+        <Button onClick={() => this.cy.png()} className="Export Image" />
+
+        <div>
+          <Simpletextarea />
+        </div>
+
+        <div>
+          <Button onClick={() => this.cy.json(JSON.parse(network))} className="Import Network" />
+        </div>
+
+        <div>
+          <Button onClick={() => console.log(this.cy.json())} className="Export Network" />
+        </div>
 
       </div>
     );
@@ -269,3 +367,4 @@ class MyApp extends React.Component {
 }
 export { store };
 export default connect(mapStateToProps)(MyApp);
+
