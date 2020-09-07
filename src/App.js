@@ -173,8 +173,11 @@ class MyApp extends React.Component {
 
 
   RemoveCyNode() {
-    const node=this.props.node
-    this.cy.remove(this.cy.$(node));
+    //const node=this.props.node
+    //cy.nodes("[foo = 'true']
+    //this.cy.remove(this.cy.$(node));
+    //this.cy.remove(this.cy.nodes("[selected = 'true']"))
+    this.cy.remove("[selected = 'true']")
   }
 
 
@@ -255,8 +258,8 @@ class MyApp extends React.Component {
         <span>Target node: {currentnode}</span>
         <NameForm AddCyConnection={this.AddCyConnection} />
         <Button onClick={this.RemoveCyNode} className="Remove Node"/>
-
-
+        <Button onClick={()=>this.cy.png()} className="Export Image"/>
+        <Button onClick={()=>console.log(this.cy.$(this.props.node))} className="Export JSON"/>
 
 
 
