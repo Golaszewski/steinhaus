@@ -6,8 +6,29 @@ import { Provider, connect } from 'react-redux'
 import { createStore } from 'redux'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import $ from 'jquery'
+import { saveAs } from 'file-saver'
+//import 'Blob'
 
+const b64ToBlob = (b64Data, contentType='', sliceSize=512) => {
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
 
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  const blob = new Blob(byteArrays, {type: contentType});
+  return blob;
+}
 
 var elements = [];
 
@@ -231,6 +252,8 @@ class MyApp extends React.Component {
     this.RemoveCyNode = this.RemoveCyNode.bind(this)
     this.AddCyConnection = this.AddCyConnection.bind(this)
     this.UpdateCyDesc = this.UpdateCyDesc.bind(this)
+    this.ExportCyImage = this.ExportCyImage.bind(this)
+    this.ExportCyNet = this.ExportCyNet.bind(this)
   }
 
   handleChangeTarget(event) {
@@ -253,6 +276,12 @@ class MyApp extends React.Component {
     this.cy.$('#' + node).data('desc', newlabel)
   }
 
+  ExportCyNet() {
+    var jsonBlob = new Blob([JSON.stringify(this.cy.json())], { type: 'application/javascript;charset=utf-8' });
+    saveAs(jsonBlob, 'graph.txt');
+
+  }
+
 
   AddCyConnection() {
 
@@ -261,26 +290,31 @@ class MyApp extends React.Component {
 
     if (node == '') {
       this.cy.add([
-        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: 'null' }, position: { x: 230, y: 300 } },
+        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: '' }, position: { x: 230, y: 300 } },
       ]);
     }
     else {
       this.cy.add([
         { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target }, position: { x: 230, y: 300 } },
-        { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: "n" + this.state.CytoSize.toString(), target: node, desc: 'null' } }
+        { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: "n" + this.state.CytoSize.toString(), target: node, desc: '' } }
       ]);
     }
     this.setState({ CytoSize: this.state.CytoSize + 1 })
 
   }
 
-
+  ExportCyImage() {
+    var b64key = 'base64,';
+    var b64 = this.cy.png().substring(this.cy.png().indexOf(b64key) + b64key.length);
+    var imgBlob = b64ToBlob(b64, 'image/png');
+    saveAs(imgBlob, 'graph.png');
+  }
 
   AddCyEdge(destination) {
     const node = this.props.node
 
     this.cy.add([
-      { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: node, target: destination, desc: 'null' } }
+      { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: node, target: destination, desc: '' } }
     ]);
   }
 
@@ -329,7 +363,7 @@ class MyApp extends React.Component {
             })
           }}
           elements={this.state.elements}
-          style={{ width: '900px', height: '800px' } }
+          style={{ width: '900px', height: '800px' }}
           stylesheet={[
             {
               selector: 'node',
@@ -337,16 +371,16 @@ class MyApp extends React.Component {
                 //width: 20,
                 //height: 20,
                 //shape: 'rectangle'
-                label:'data(label)'
+                label: 'data(label)'
               }
             },
             {
               selector: 'edge',
               style: {
                 //width: 15,
-                //label:'data(desc)',
-                'text-margin-y':-10,
-                'text-rotation':'autorotate'
+                label: 'data(desc)',
+                'text-margin-y': -10,
+                'text-rotation': 'autorotate'
               }
             }
           ]}
@@ -367,7 +401,7 @@ class MyApp extends React.Component {
         />
 
         <Button onClick={this.RemoveCyNode} className="Remove Node" />
-        <Button onClick={() => this.cy.png()} className="Export Image" />
+        <Button onClick={this.ExportCyImage} className="Export Image" />
 
         <div>
           <Simpletextarea />
@@ -378,7 +412,7 @@ class MyApp extends React.Component {
         </div>
 
         <div>
-          <Button onClick={() => console.log(this.cy.json())} className="Export Network" />
+          <Button onClick={this.ExportCyNet} className="Export Network" />
         </div>
 
       </div>
