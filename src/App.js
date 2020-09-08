@@ -329,7 +329,27 @@ class MyApp extends React.Component {
             })
           }}
           elements={this.state.elements}
-          style={{ width: '600px', height: '600px' }}
+          style={{ width: '900px', height: '800px' } }
+          stylesheet={[
+            {
+              selector: 'node',
+              style: {
+                //width: 20,
+                //height: 20,
+                //shape: 'rectangle'
+                label:'data(label)'
+              }
+            },
+            {
+              selector: 'edge',
+              style: {
+                //width: 15,
+                label:'data(desc)',
+                'text-margin-y':-10,
+                'text-rotation':'autorotate'
+              }
+            }
+          ]}
 
         />
 
