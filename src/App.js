@@ -344,7 +344,7 @@ class MyApp extends React.Component {
               selector: 'edge',
               style: {
                 //width: 15,
-                label:'data(desc)',
+                //label:'data(desc)',
                 'text-margin-y':-10,
                 'text-rotation':'autorotate'
               }
