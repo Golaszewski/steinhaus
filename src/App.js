@@ -364,6 +364,7 @@ class MyApp extends React.Component {
           }}
           elements={this.state.elements}
           style={{ width: '750px', height: '600px' }}
+          wheelSensitivity={0.6}
           stylesheet={[
             {
               selector: 'node',
