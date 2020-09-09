@@ -363,7 +363,7 @@ class MyApp extends React.Component {
             })
           }}
           elements={this.state.elements}
-          style={{ width: '900px', height: '800px' }}
+          style={{ width: '750px', height: '600px' }}
           stylesheet={[
             {
               selector: 'node',
