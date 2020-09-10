@@ -573,7 +573,6 @@ class MyApp extends React.Component {
 
     return (
       <div>
-        <Button onClick={() => this.cy.unmount()} className="Destroy Graph" />
         <CytoscapeComponent
           cy={(cy) => {
             this.cy = cy
@@ -741,7 +740,7 @@ class OuterApp extends React.Component {
     const loadimage = this.state.loadimage
     let cytograph;
     if (loadimage == 'empty') {
-      cytograph = <span>Click submit</span>;
+      cytograph = <span>Paste image url or leave blank</span>;
     }
     else if (loadimage == '') {
       cytograph = <MyApp />;
@@ -756,7 +755,7 @@ class OuterApp extends React.Component {
           handleChange={this.handleChange}
           Submit={this.handleSubmit}
           norender={true}
-        />
+         className="Load Background"/>
         {cytograph}
       </div>
     );
