@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import MyApp from './App';
+import OuterApp from './App';
 import * as serviceWorker from './serviceWorker';
 import CytoscapeComponent from 'react-cytoscapejs';
 import {Provider,connect} from 'react-redux'
@@ -15,7 +15,7 @@ import {store} from './App'
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-    <MyApp />
+      <OuterApp />
     </Provider>
   </React.StrictMode>,
   
