@@ -9,6 +9,8 @@ import { useSelector } from 'react-redux'
 import $ from 'jquery'
 import { saveAs } from 'file-saver';
 import MyAppWithBackground from './cytopic.js';
+import Iframe from 'react-iframe'
+
 
 //var cytoscape = require('cytoscape');
 //var cyCanvas = require('cytoscape-canvas')
@@ -56,6 +58,8 @@ export const UPDATE_NODECOLOR = 'UPDATE_NODECOLOR'
 export const UPDATE_EDGECOLOR = 'UPDATE_EDGECOLOR'
 export const UPDATE_EDGEWIDTH = 'UPDATE_EDGEWIDTH'
 export const UPDATE_NODESIZE = 'UPDATE_NODESIZE'
+export const SEL_NODEURL = 'SEL_NODEURL'
+export const UPDATE_NODEURL = 'UPDATE_NODEURL'
 
 const initialState = {
   node: '',
@@ -111,6 +115,13 @@ export function updateNodeSize(nodesize) {
   }
 }
 
+export function updateNodeURL(nodeurl) {
+  return {
+    type: UPDATE_NODEURL,
+    nodeurl
+  }
+}
+
 export function addNetwork(network) {
   return {
     type: ADD_NET,
@@ -132,6 +143,13 @@ export function getDesc(getdescription) {
   }
 }
 
+export function selNodeURL(selnodeurl) {
+  return {
+    type: SEL_NODEURL,
+    selnodeurl
+  }
+}
+
 
 
 export const mapStateToProps = state => ({
@@ -144,7 +162,9 @@ export const mapStateToProps = state => ({
   nodecolor: state.nodecolor,
   edgecolor: state.edgecolor,
   edgewidth: state.edgewidth,
-  nodesize: state.nodesize
+  nodesize: state.nodesize,
+  nodeurl: state.nodeurl,
+  selnodeurl: state.selnodeurl
 })
 
 
@@ -207,6 +227,16 @@ function cytoReduce(state = initialState, action) {
         nodesize: action.nodesize
       })
 
+    case UPDATE_NODEURL:
+      return Object.assign({}, state, {
+        nodeurl: action.nodeurl
+      })
+
+    case SEL_NODEURL:
+      return Object.assign({}, state, {
+        selnodeurl: action.selnodeurl
+      })
+
     default:
       return state
   }
@@ -232,8 +262,8 @@ class OrientLabel extends React.Component {
   render() {
     return (
       <div onChange={this.onChangeValue}>
-         <div><input type="radio" value="0" name="orient" /> Top Left</div>
-         <div><input type="radio" value="1" name="orient" /> Top Middle</div>
+        <div><input type="radio" value="0" name="orient" /> Top Left</div>
+        <div><input type="radio" value="1" name="orient" /> Top Middle</div>
         <div><input type="radio" value="2" name="orient" /> Top Right</div>
         <div><input type="radio" value="3" name="orient" /> Middle Right</div>
         <div><input type="radio" value="4" name="orient" /> Bottom Right</div>
@@ -278,6 +308,23 @@ class Simpletextarea extends React.Component {
   }
 }
 Simpletextarea = connect(mapStateToProps)(Simpletextarea)
+
+class IFrameRender extends React.Component {
+
+  render() {
+
+    const node = this.props.node
+    const nodeurl = this.props.selnodeurl
+
+    return (
+      <Iframe url={nodeurl} //"https://en.wikipedia.org/wiki/Redding,_California"
+        width="700px"
+        height="600px"></Iframe>
+    )
+  }
+}
+IFrameRender = connect(mapStateToProps)(IFrameRender)
+
 
 
 class Button extends React.Component {
@@ -365,7 +412,9 @@ class MyApp extends React.Component {
     this.SubmitEdgeWidth = this.SubmitEdgeWidth.bind(this)
     this.SubmitNodeSize = this.SubmitNodeSize.bind(this)
     this.handleUpdateNodeSize = this.handleUpdateNodeSize.bind(this)
-    this.OrientNodeLabel=this.OrientNodeLabel.bind(this)
+    this.OrientNodeLabel = this.OrientNodeLabel.bind(this)
+    this.handleUpdateNodeURL = this.handleUpdateNodeURL.bind(this)
+    this.SubmitNodeURL = this.SubmitNodeURL.bind(this)
   }
 
   componentDidMount() {
@@ -397,55 +446,67 @@ class MyApp extends React.Component {
     store.dispatch(updateNodeSize(event.target.value));
   }
 
+  handleUpdateNodeURL(event) {
+    store.dispatch(updateNodeURL(event.target.value));
+  }
+
+  
+
   RemoveCyNode() {
     const nodevar = "#" + this.props.node
     this.cy.remove(this.cy.$(nodevar));
   }
 
+ // getNodeURL() {
+  //  const nodevar = "#" + this.props.node
+  //  store.dispatch(selNodeURL(this.cy.$(nodevar).data('url')))
+  //  console.log('dispatch url')
+  //}
+
   OrientNodeLabel(id) {
-    const node=this.props.node
-    var horizontal=''
-    var vertical=''
+    const node = this.props.node
+    var horizontal = ''
+    var vertical = ''
     switch (id) {
       case "0":
-        horizontal='left'
-        vertical='top'
+        horizontal = 'left'
+        vertical = 'top'
         break;
       case "1":
-        horizontal='center'
-        vertical='top'
+        horizontal = 'center'
+        vertical = 'top'
         break;
       case "2":
-        horizontal='right'
-        vertical='top'
+        horizontal = 'right'
+        vertical = 'top'
         break;
       case "3":
-        horizontal='right'
-        vertical='center'
+        horizontal = 'right'
+        vertical = 'center'
         break;
       case "4":
-        horizontal='right'
-        vertical='bottom'
+        horizontal = 'right'
+        vertical = 'bottom'
         break;
       case "5":
-        horizontal='center'
-        vertical='bottom'
+        horizontal = 'center'
+        vertical = 'bottom'
         break;
       case "6":
-        horizontal='left'
-        vertical='bottom'
+        horizontal = 'left'
+        vertical = 'bottom'
         break;
       case "7":
-        horizontal='left'
-        vertical='center'
+        horizontal = 'left'
+        vertical = 'center'
         break;
 
       default:
-        horizontal='center'
-        vertical='top'
+        horizontal = 'center'
+        vertical = 'top'
     }
     this.cy.$('#' + node).style('text-halign', horizontal)
-    this.cy.$('#' + node).style('text-valign',vertical)
+    this.cy.$('#' + node).style('text-valign', vertical)
     console.log(this.cy.$('#' + node).style())
     console.log(typeof id)
     console.log(vertical)
@@ -457,6 +518,13 @@ class MyApp extends React.Component {
     const node = this.props.node
     console.log(newlabel)
     this.cy.$('#' + node).data('desc', newlabel)
+  }
+
+  SubmitNodeURL() {
+    const URL = this.props.nodeurl
+    const node = this.props.node
+    //console.log(newlabel)
+    this.cy.$('#' + node).data('url', URL)
   }
 
   SubmitEdgeWidth() {
@@ -535,12 +603,12 @@ class MyApp extends React.Component {
 
     if (node == '') {
       this.cy.add([
-        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: '' }, position: { x: 230, y: 300 } },
+        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: '', url: '' }, position: { x: 230, y: 300 } },
       ]);
     }
     else {
       this.cy.add([
-        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target }, position: { x: 230, y: 300 } },
+        { group: 'nodes', data: { id: "n" + this.state.CytoSize.toString(), label: target, desc: '', url: '' }, position: { x: 230, y: 300 } },
         { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: "n" + this.state.CytoSize.toString(), target: node, desc: '' } }
       ]);
     }
@@ -573,79 +641,87 @@ class MyApp extends React.Component {
 
     return (
       <div>
-        <CytoscapeComponent
-          cy={(cy) => {
-            this.cy = cy
-            cy.on('tap', function (evt) {
+        <div className="bodyrow">
 
-              if (evt.target === cy) {
-                store.dispatch(selNode(''))
-              }
-              else {
-                var node = evt.target;
-                var selector = '#' + store.getState().node
 
-                console.log('clicked ID' + node.data('label'))
 
-                console.log('log ' + selector)
-                console.log(cy.json())
-                store.dispatch(selNode(node.id()))
-                store.dispatch(getDesc(cy.$(selector).data('desc')))
-              }
-            })
-            cy.on('cxttap', 'node', function (evt) {
-              var nodetarget = evt.target.id();
-              cy.add([
-                {
-                  group: 'edges', data: {
-                    id: 'e' + getRandomInt(1000).toString(), //+ //this.state.CytoSize.toString(),
-                    source: store.getState().node,
-                    target: nodetarget
+          <div>
+            <CytoscapeComponent
+              cy={(cy) => {
+                this.cy = cy
+                cy.on('tap', function (evt) {
+
+                  if (evt.target === cy) {
+                    store.dispatch(selNode(''))
                   }
+                  else {
+                    var node = evt.target;
+                    var selector = '#' + store.getState().node
+
+                    console.log('clicked ID' + node.data('label'))
+
+                    console.log('log ' + selector)
+                    console.log(cy.json())
+                    store.dispatch(selNode(node.id()))
+                    store.dispatch(getDesc(cy.$(selector).data('desc')))
+                    store.dispatch(selNodeURL(cy.$(selector).data('url')))
+                  }
+                })
+                cy.on('cxttap', 'node', function (evt) {
+                  var nodetarget = evt.target.id();
+                  cy.add([
+                    {
+                      group: 'edges', data: {
+                        id: 'e' + getRandomInt(1000).toString(), //+ //this.state.CytoSize.toString(),
+                        source: store.getState().node,
+                        target: nodetarget
+                      }
+                    }
+                  ])
+                })
+                //var layer = this.cy.cyCanvas();
+                //var canvas = layer.getCanvas();
+                //var ctx = canvas.getContext('2d');
+
+
+
+
+              }}
+              elements={this.state.elements}
+
+              style={{ width: '800px', height: '600px' }}
+              wheelSensitivity={0.6}
+            /* stylesheet={[
+              {
+                selector: 'node',
+                style: {
+                  width: 10,
+                  height: 10,
+                  'background-color': '#666',
+                  label: 'data(label)'
                 }
-              ])
-            })
-            //var layer = this.cy.cyCanvas();
-            //var canvas = layer.getCanvas();
-            //var ctx = canvas.getContext('2d');
+              },
+              {
+                selector: 'edge',
+                style: {
+                  width: 5,
+                  label: 'data(desc)',
+                  'text-margin-y': -10,
+                  'text-rotation': 'autorotate',
+                  'line-color': '#000000',
+                }
+              }
+            ]} */
 
+            />
+          </div>
+          <div>
+            <IFrameRender selnodeurl={this.props.selnodeurl}/>
+          </div>
+        </div>
 
-
-
-          }}
-          elements={this.state.elements}
-
-          style={{ width: '750px', height: '600px' }}
-          wheelSensitivity={0.6}
-        /* stylesheet={[
-          {
-            selector: 'node',
-            style: {
-              width: 10,
-              height: 10,
-              'background-color': '#666',
-              label: 'data(label)'
-            }
-          },
-          {
-            selector: 'edge',
-            style: {
-              width: 5,
-              label: 'data(desc)',
-              'text-margin-y': -10,
-              'text-rotation': 'autorotate',
-              'line-color': '#000000',
-            }
-          }
-        ]} */
-
-
-
-
-        />
 
         <span>Description: {getdescription}</span>
-        <span>{this.props.node}</span>
         <NameForm
           Submit={this.AddCyConnection}
           handleChange={this.handleChangeTarget}
@@ -660,6 +736,12 @@ class MyApp extends React.Component {
           norender={true}
         />
 
+        <NameForm
+          Submit={this.SubmitNodeURL}
+          handleChange={this.handleUpdateNodeURL}
+          className="Change Node URL"
+          norender={true}
+        />
         <NameForm
           Submit={this.SubmitNodeColor}
           handleChange={this.handleUpdateNodeColor}
@@ -703,8 +785,10 @@ class MyApp extends React.Component {
           <Button onClick={this.ExportCyNet} className="Export Network" />
         </div>
 
-        <OrientLabel onChange={this.OrientNodeLabel}/>
+        <OrientLabel onChange={this.OrientNodeLabel} />
+
       </div>
+
     );
 
 
@@ -755,7 +839,7 @@ class OuterApp extends React.Component {
           handleChange={this.handleChange}
           Submit={this.handleSubmit}
           norender={true}
-         className="Load Background"/>
+          className="Load Background" />
         {cytograph}
       </div>
     );

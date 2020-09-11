@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#picture-eg {
+  border: 1px solid #ddd;
+  min-width: 3em;
+  min-height: 3em;
+  width: 25%;
+  float: right;
+}
+
+.bodyrow{display:flex; flex-direction:row;}
