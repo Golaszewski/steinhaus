@@ -10,12 +10,43 @@ import $ from 'jquery'
 import { saveAs } from 'file-saver';
 import MyAppWithBackground from './cytopic.js';
 import Iframe from 'react-iframe'
+import Amplify, { API, graphqlOperation } from 'aws-amplify';
+import awsconfig from './aws-exports';
+//import { API, graphqlOperation } from "aws-amplify";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid';
+//import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import * as mutations from './graphql/mutations'
+import * as queries from './graphql/queries'
+import { withRouter } from "react-router";
 
 
 //var cytoscape = require('cytoscape');
 //var cyCanvas = require('cytoscape-canvas')
 //cyCanvas(cytoscape)
 //import 'Blob'
+
+
+Amplify.configure(awsconfig);
+
+//import awsconfig from './aws-exports';
+
+/* const client = new AWSAppSyncClient({
+  url: awsconfig.aws_appsync_graphqlEndpoint,
+  region: awsconfig.aws_appsync_region,
+  auth: {
+    type: AUTH_TYPE.API_KEY,
+    apiKey: awsconfig.aws_appsync_apiKey,
+  },
+}); */
+
+//const uuidv4 = require("uuid/v4")
+
 
 export const b64ToBlob = (b64Data, contentType = '', sliceSize = 512) => {
   const byteCharacters = atob(b64Data);
@@ -41,6 +72,10 @@ var elements = [];
 
 export function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getURL(item) {
+  return item.url
 }
 
 //function submitImage(imagelink){
@@ -399,6 +434,18 @@ class MyApp extends React.Component {
       loaded: false
     }
 
+    
+
+
+
+
+    /* GetNetwork.then(function (result) {
+      console.log(routes)
+      const network = result.data.getNetwork.network
+      //const routes = netarray.map(QueryToRoutes)
+      this.setState({elements:network})
+      console.log(routes)
+    }); */
 
     this.RemoveCyNode = this.RemoveCyNode.bind(this)
     this.AddCyConnection = this.AddCyConnection.bind(this)
@@ -415,11 +462,30 @@ class MyApp extends React.Component {
     this.OrientNodeLabel = this.OrientNodeLabel.bind(this)
     this.handleUpdateNodeURL = this.handleUpdateNodeURL.bind(this)
     this.SubmitNodeURL = this.SubmitNodeURL.bind(this)
+    this.SaveCyNet = this.SaveCyNet.bind(this)
+    this.GetNetwork = this.GetNetwork.bind(this)
+  }
+
+  GetNetwork = async () => {
+    console.log("waiting")
+    const getnetwork = await API.graphql(graphqlOperation(queries.getNetwork, { id: this.props.id }));
+    /* //getnetwork.then(function (result) {
+      console.log("results")
+      console.log(this.props.id)
+      console.log(result)
+      const network = result.data.getNetwork.network
+      //const routes = netarray.map(QueryToRoutes)
+      this.setState({ elements: network })
+      
+    }); */
+    console.log(getnetwork.data.getNetwork.network)
+    const network=getnetwork.data.getNetwork.network
+    this.cy.json(JSON.parse(network))
   }
 
   componentDidMount() {
     console.log('Regular Component DID MOUNT!')
-    //this.cy.destroy()
+    this.GetNetwork()
   }
 
   handleChangeTarget(event) {
@@ -450,14 +516,14 @@ class MyApp extends React.Component {
     store.dispatch(updateNodeURL(event.target.value));
   }
 
-  
+
 
   RemoveCyNode() {
     const nodevar = "#" + this.props.node
     this.cy.remove(this.cy.$(nodevar));
   }
 
- // getNodeURL() {
+  // getNodeURL() {
   //  const nodevar = "#" + this.props.node
   //  store.dispatch(selNodeURL(this.cy.$(nodevar).data('url')))
   //  console.log('dispatch url')
@@ -595,6 +661,32 @@ class MyApp extends React.Component {
 
   }
 
+  SaveCyNet() {
+    const id = getRandomInt(1000000); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+    const network = JSON.stringify(this.cy.json())
+
+    const input = {
+      url: id,
+      id: id,
+      network: network
+    };
+
+    const newNet = API.graphql(graphqlOperation(mutations.createNetwork, { input: input }));
+
+  }
+
+  GetCyNet() {
+
+    const allTodos = API.graphql(graphqlOperation(queries.listNetworks));
+    //const listURL=allTodos.listNetworks.map(getURL)
+    allTodos.then(function (result) {
+      const netresult = result.data.listNetworks.items[1].url
+      console.log(netresult)
+    });
+
+
+  }
+
 
   AddCyConnection() {
 
@@ -716,7 +808,7 @@ class MyApp extends React.Component {
             />
           </div>
           <div>
-            <IFrameRender selnodeurl={this.props.selnodeurl}/>
+            <IFrameRender selnodeurl={this.props.selnodeurl} />
           </div>
         </div>
 
@@ -783,9 +875,13 @@ class MyApp extends React.Component {
 
         <div>
           <Button onClick={this.ExportCyNet} className="Export Network" />
+          <Button onClick={this.SaveCyNet} className="Save Network" />
+          <Button onClick={this.GetCyNet} className="Get Network" />
         </div>
 
+
         <OrientLabel onChange={this.OrientNodeLabel} />
+        <span>{this.props.id}</span>
 
       </div>
 
@@ -794,7 +890,6 @@ class MyApp extends React.Component {
 
   }
 }
-
 
 
 
@@ -820,19 +915,23 @@ class OuterApp extends React.Component {
     this.setState({ loadimage: this.state.imagelink })
   }
 
+  componentDidMount() {
+    const id = this.props.match.params.id
+  }
+
   render() {
     const loadimage = this.state.loadimage
     let cytograph;
-    if (loadimage == 'empty') {
+/*     if (loadimage == 'empty') {
       cytograph = <span>Paste image url or leave blank</span>;
-    }
-    else if (loadimage == '') {
-      cytograph = <MyApp />;
-    }
+    } */
+    //else if (loadimage == '') {
+      cytograph = <MyApp id={this.props.match.params.id} />;
+    //}
 
-    else {
-      cytograph = <MyAppWithBackground imageurl={this.state.loadimage} />;
-    }
+/*     else {
+      cytograph = <MyAppWithBackground imageurl={this.state.loadimage} elements={this.props.match.params.id} />;
+    } */
     return (
       <div>
         <NameForm
@@ -840,6 +939,7 @@ class OuterApp extends React.Component {
           Submit={this.handleSubmit}
           norender={true}
           className="Load Background" />
+        <span>{this.props.match.params.id}</span>
         {cytograph}
       </div>
     );
@@ -847,7 +947,69 @@ class OuterApp extends React.Component {
 }
 
 MyApp = connect(mapStateToProps)(MyApp);
-export default OuterApp;
+
+
+const ROUTES = [
+  { path: "/", key: "ROOT", exact: true, component: () => <h1>Log in</h1> },
+  {
+    path: "/app",
+    key: "APP",
+    component: () => <h1>App</h1>,
+    routes: [
+      {
+        path: "/app",
+        key: "APP_ROOT",
+        exact: true,
+        component: () => <h1>App Index</h1>,
+      },
+      {
+        path: "/app/page",
+        key: "APP_PAGE",
+        exact: true,
+        component: () => <h1>App Page</h1>,
+      },
+    ],
+  },
+];
+
+//const GetNetworks = API.graphql(graphqlOperation(queries.listNetworks));
+
+var netarray = []
+
+/* //GetNetworks.then(function (result) {
+  netarray = result.data.listNetworks.items
+  const routes = netarray.map(QueryToRoutes)
+  //console.log(netarray[2].url)
+  console.log(routes)
+}); */
+
+function QueryToRoutes(array) {
+  var route = {}
+  route.path = '/graph/' + array.url
+  route.component = () => <OuterApp elements={array.network} />
+  return route
+}
+
+const routes = netarray.map(QueryToRoutes)
+console.log(netarray)
+console.log(routes)
+
+class Site extends React.Component {
+  render() {
+    //const routeComponents = routes.map(({ path, component }, key) => <Route exact path={path} component={component} key={key} />);
+    return (
+      <Router>
+        <Switch>
+          <Route exact path="/" component={OuterApp} />
+          <Route path="/graph/:id" component={OuterApp} />
+        </Switch>
+      </Router>
+    );
+  }
+}
+
+
+export default Site;
 
 
 export {
