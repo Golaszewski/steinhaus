@@ -17,6 +17,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  HashRouter,
   Link
 } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
@@ -998,12 +999,12 @@ class Site extends React.Component {
   render() {
     //const routeComponents = routes.map(({ path, component }, key) => <Route exact path={path} component={component} key={key} />);
     return (
-      <Router>
+      <HashRouter>
         <Switch>
-          <Route path="/#/:id" component={OuterApp} />
+          <Route path="/:id" component={OuterApp} />
           <Route path="/*" component={OuterApp} />
         </Switch>
-      </Router>
+      </HashRouter>
     );
   }
 }
