@@ -1001,7 +1001,7 @@ class Site extends React.Component {
       <Router>
         <Switch>
           <Route path="/:id" component={OuterApp} />
-          <Route component={OuterApp} />
+          <Route path="/*" component={OuterApp} />
         </Switch>
       </Router>
     );
