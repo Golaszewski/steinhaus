@@ -732,7 +732,7 @@ class MyApp extends React.Component {
     if(this.state.exporturl!==''){
       var link="alkindi.live/#/"+this.state.exporturl
 
-      exportnetwork=<a href={link}>"alkindi.live/#/"+{this.state.exporturl}</a>
+      exportnetwork=<a href={link}>"alkindi.live/#/"+{link}</a>
     }
     else{
       exportnetwork=<span></span>
@@ -893,7 +893,7 @@ class MyApp extends React.Component {
         </div>
         <div>
           <span><b>Network URL: </b></span>
-        <a href={"alkindi.live/#/"+this.state.exporturl}>{"alkindi.live/#/"+this.state.exporturl}</a>
+        <a href={this.state.exporturl}>{"alkindi.live/#/"+this.state.exporturl}</a>
         </div>
           <br/>
         <span><b>Label Orientation</b></span>
