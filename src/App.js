@@ -432,7 +432,8 @@ class MyApp extends React.Component {
       elements,
       isclicked: '',
       CytoSize: elements.length,
-      loaded: false
+      loaded: false,
+      exporturl:''
     }
 
     
@@ -673,7 +674,7 @@ class MyApp extends React.Component {
     };
 
     const newNet = API.graphql(graphqlOperation(mutations.createNetwork, { input: input }));
-
+    this.setState({exporturl:id})
   }
 
   GetCyNet() {
@@ -723,9 +724,19 @@ class MyApp extends React.Component {
       { group: 'edges', data: { id: 'e' + this.state.CytoSize.toString(), source: node, target: destination, desc: '' } }
     ]);
   }
-
+  
 
   render() {
+
+    let exportnetwork;
+    if(this.state.exporturl!==''){
+      var link="alkindi.live/#/"+this.state.exporturl
+
+      exportnetwork=<a href={link}>"alkindi.live/#/"+{this.state.exporturl}</a>
+    }
+    else{
+      exportnetwork=<span></span>
+    }
 
     const currentnode = this.props.node
     const description = this.props.description
@@ -814,7 +825,7 @@ class MyApp extends React.Component {
         </div>
 
 
-        <span>Description: {getdescription}</span>
+        <span><b>Description: </b>{getdescription}</span>
         <NameForm
           Submit={this.AddCyConnection}
           handleChange={this.handleChangeTarget}
@@ -877,12 +888,17 @@ class MyApp extends React.Component {
         <div>
           <Button onClick={this.ExportCyNet} className="Export Network" />
           <Button onClick={this.SaveCyNet} className="Save Network" />
-          <Button onClick={this.GetCyNet} className="Get Network" />
+          
+          
         </div>
-
-
+        <div>
+          <span><b>Network URL: </b></span>
+        <a href={"alkindi.live/#/"+this.state.exporturl}>{"alkindi.live/#/"+this.state.exporturl}</a>
+        </div>
+          <br/>
+        <span><b>Label Orientation</b></span>
         <OrientLabel onChange={this.OrientNodeLabel} />
-        <span>{this.props.id}</span>
+        
 
       </div>
 
@@ -940,7 +956,7 @@ class OuterApp extends React.Component {
           Submit={this.handleSubmit}
           norender={true}
           className="Load Background" />
-        <span>{this.props.match.params.id}</span>
+        
         {cytograph}
       </div>
     );
