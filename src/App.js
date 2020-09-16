@@ -1000,7 +1000,7 @@ class Site extends React.Component {
     return (
       <Router>
         <Switch>
-          <Route path="/:id" component={OuterApp} />
+          <Route path="/#/:id" component={OuterApp} />
           <Route path="/*" component={OuterApp} />
         </Switch>
       </Router>
