@@ -893,7 +893,7 @@ class MyApp extends React.Component {
         </div>
         <div>
           <span><b>Network URL: </b></span>
-        <a href={this.state.exporturl}>{"alkindi.live/#/"+this.state.exporturl}</a>
+        <a href={"#/"+this.state.exporturl}>{"alkindi.live/#/"+this.state.exporturl}</a>
         </div>
           <br/>
         <span><b>Label Orientation</b></span>
