@@ -1,0 +1,10 @@
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Network @model {
+  url: String!
+  network: String!
+}

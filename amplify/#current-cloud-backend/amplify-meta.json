@@ -1,0 +1,59 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "amplify-alkindi-dev-145815-authRole",
+			"UnauthRoleArn": "arn:aws:iam::731594735001:role/amplify-alkindi-dev-145815-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::731594735001:role/amplify-alkindi-dev-145815-authRole",
+			"Region": "us-east-1",
+			"DeploymentBucketName": "amplify-alkindi-dev-145815-deployment",
+			"UnauthRoleName": "amplify-alkindi-dev-145815-unauthRole",
+			"StackName": "amplify-alkindi-dev-145815",
+			"StackId": "arn:aws:cloudformation:us-east-1:731594735001:stack/amplify-alkindi-dev-145815/40eb52f0-f6bc-11ea-b116-0ad6b76236b1",
+			"AmplifyAppId": "d1g2yyiw2mmzoy"
+		}
+	},
+	"api": {
+		"alkindi": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"defaultAuthentication": {
+						"authenticationType": "API_KEY",
+						"apiKeyConfig": {
+							"apiKeyExpirationDays": 90,
+							"description": "demo"
+						}
+					},
+					"additionalAuthenticationProviders": []
+				},
+				"GraphQLAPIIdOutput": "2tullkxsznem3fijx3lnhbe43m",
+				"GraphQLAPIEndpointOutput": "https://l6esuhhxvzfrjpn3w7bby7go4a.appsync-api.us-east-1.amazonaws.com/graphql",
+				"GraphQLAPIKeyOutput": "da2-tuewj545e5fwnedfpxtco4yqbi"
+			},
+			"lastPushTimeStamp": "2020-09-15T13:42:03.896Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/amplify-alkindi-dev-145815-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"logicalId": "apialkindi"
+			},
+			"lastPushDirHash": "ovCD78Bh2MTy7bRaIcRoC+xxK20="
+		},
+		"My AppSync App": {
+			"service": "AppSync",
+			"output": {
+				"authConfig": {
+					"defaultAuthentication": {
+						"authenticationType": "API_KEY"
+					},
+					"additionalAuthenticationProviders": null
+				},
+				"GraphQLAPIIdOutput": "irwav3zu2ndytkubdw5snzrvqu",
+				"GraphQLAPIEndpointOutput": "https://hnmr3gw3izd75gksi4lbia7hde.appsync-api.us-east-2.amazonaws.com/graphql",
+				"name": "My AppSync App",
+				"region": "us-east-2",
+				"GraphQLAPIKeyOutput": "da2-5u2p2fepdrgg7js6xqxp5y25qi"
+			},
+			"lastPushTimeStamp": "2020-09-15T03:20:13.316Z"
+		}
+	}
+}

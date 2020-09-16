@@ -1,0 +1,8 @@
+{
+    "CreateAPIKey": 1,
+    "AppSyncApiName": "alkindi",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "S3DeploymentBucket": "amplify-alkindi-dev-145815-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/4dcb2f855ce86094b5f067b7b3faa2c1f49bbf3c"
+}
