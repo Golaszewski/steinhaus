@@ -292,7 +292,7 @@ class OrientLabel extends React.Component {
 
   onChangeValue(event) {
     this.props.onChange(event.target.value);
-    console.log(event.target.value)
+    //console.log(event.target.value)
   }
 
   render() {
@@ -469,7 +469,7 @@ class MyApp extends React.Component {
   }
 
   GetNetwork = async () => {
-    console.log("waiting")
+    //console.log("waiting")
     const getnetwork = await API.graphql(graphqlOperation(queries.getNetwork, { id: this.props.id }));
     /* //getnetwork.then(function (result) {
       console.log("results")
@@ -480,13 +480,13 @@ class MyApp extends React.Component {
       this.setState({ elements: network })
       
     }); */
-    console.log(getnetwork.data.getNetwork.network)
+    //console.log(getnetwork.data.getNetwork.network)
     const network=getnetwork.data.getNetwork.network
     this.cy.json(JSON.parse(network))
   }
 
   componentDidMount() {
-    console.log('Regular Component DID MOUNT!')
+    //console.log('Regular Component DID MOUNT!')
     this.GetNetwork()
   }
 
@@ -575,16 +575,16 @@ class MyApp extends React.Component {
     }
     this.cy.$('#' + node).style('text-halign', horizontal)
     this.cy.$('#' + node).style('text-valign', vertical)
-    console.log(this.cy.$('#' + node).style())
-    console.log(typeof id)
-    console.log(vertical)
-    console.log(horizontal)
+    //console.log(this.cy.$('#' + node).style())
+    //console.log(typeof id)
+    //console.log(vertical)
+    //console.log(horizontal)
   }
 
   UpdateCyDesc() {
     const newlabel = this.props.description
     const node = this.props.node
-    console.log(newlabel)
+    //console.log(newlabel)
     this.cy.$('#' + node).data('desc', newlabel)
   }
 
@@ -607,7 +607,7 @@ class MyApp extends React.Component {
       }).update()
 
 
-    console.log("submitted" + newwidth)
+    //console.log("submitted" + newwidth)
   }
 
   SubmitNodeColor() {
@@ -622,7 +622,7 @@ class MyApp extends React.Component {
       }).update()
 
 
-    console.log("submitted" + newcolor)
+    //console.log("submitted" + newcolor)
   }
 
   SubmitEdgeColor() {
@@ -637,7 +637,7 @@ class MyApp extends React.Component {
       }).update()
 
 
-    console.log("submitted" + newcolor)
+    //console.log("submitted" + newcolor)
   }
 
 
@@ -654,7 +654,7 @@ class MyApp extends React.Component {
       }).update()
 
 
-    console.log("submitted" + nodesize)
+    //console.log("submitted" + nodesize)
   }
 
   ExportCyNet() {
@@ -683,7 +683,7 @@ class MyApp extends React.Component {
     //const listURL=allTodos.listNetworks.map(getURL)
     allTodos.then(function (result) {
       const netresult = result.data.listNetworks.items[1].url
-      console.log(netresult)
+      //console.log(netresult)
     });
 
 
@@ -762,10 +762,10 @@ class MyApp extends React.Component {
                     var node = evt.target;
                     var selector = '#' + store.getState().node
 
-                    console.log('clicked ID' + node.data('label'))
+                    //console.log('clicked ID' + node.data('label'))
 
-                    console.log('log ' + selector)
-                    console.log(cy.json())
+                    //console.log('log ' + selector)
+                    //console.log(cy.json())
                     store.dispatch(selNode(node.id()))
                     store.dispatch(getDesc(cy.$(selector).data('desc')))
                     store.dispatch(selNodeURL(cy.$(selector).data('url')))
@@ -1008,8 +1008,8 @@ function QueryToRoutes(array) {
 }
 
 const routes = netarray.map(QueryToRoutes)
-console.log(netarray)
-console.log(routes)
+//console.log(netarray)
+//console.log(routes)
 
 class Site extends React.Component {
   render() {
